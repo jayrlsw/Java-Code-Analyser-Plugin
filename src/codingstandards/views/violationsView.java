@@ -2,7 +2,6 @@ package codingstandards.views;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;

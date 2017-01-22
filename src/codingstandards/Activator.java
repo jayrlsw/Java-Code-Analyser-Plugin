@@ -1,4 +1,4 @@
-package codingstandardsanalyser;
+package codingstandards;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
