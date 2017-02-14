@@ -40,6 +40,7 @@ public class BeginScan {
 	
 	static IProject project;
 	static Map<String, String> options;
+	static String path;
 	
 	public static void analyse(ExecutionEvent event) throws ExecutionException, PartInitException {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
@@ -48,7 +49,7 @@ public class BeginScan {
 		
 		IStructuredSelection files = (IStructuredSelection) service.getSelection();
 		
-		List<String> results = new ArrayList<String>();
+		List<ViolationData> results = new ArrayList<ViolationData>();
 		
 		IResource hResource = (IResource)Platform.getAdapterManager().getAdapter(files.getFirstElement(), IResource.class);
 		
@@ -86,7 +87,7 @@ public class BeginScan {
 				} catch (JavaModelException e2) {
 					e2.printStackTrace();
 				}
-				String path = null;
+				path = null;
 				if(resource.getType() == IResource.FILE) {
 					IFile ifile = (IFile) resource;
 					path = ifile.getRawLocation().toString();
@@ -116,13 +117,21 @@ public class BeginScan {
 				"Analysis Complete. " + results.size() + " violations found.");
 	}
 	
-	static List<String> processAnalysis(BufferedReader io) throws IOException {
+	static List<ViolationData> processAnalysis(BufferedReader io) throws IOException {
 		
-		List<String> fOutput = new ArrayList<String>();
+		List<ViolationData> fOutput = new ArrayList<ViolationData>();
 		String str = "";
+		int lC = 1;
 		while((str = io.readLine()) != null) {
 			str = replaceIndentation(str);
-			fOutput.addAll(ColumnLimit.scan(str, 100));
+			ColumnLimit c = new ColumnLimit();
+			ViolationData r = c.scan(str, 100);
+			if (r != null) {
+				r.setLineNumber(lC);
+				r.setFilename(path);
+				fOutput.add(r);
+			}
+			lC++;
 		}
 		
 		return fOutput;
@@ -135,11 +144,11 @@ public class BeginScan {
 		return str;
 	}
 	
-	static void displayViolations(List<String> results) {
+	static void displayViolations(List<ViolationData> results) {
 		BundleContext ctx = FrameworkUtil.getBundle(BeginScan.class).getBundleContext();
 		ServiceReference<EventAdmin> ref = ctx.getServiceReference(EventAdmin.class);
 		EventAdmin eventAdmin = ctx.getService(ref);
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, List<ViolationData>> properties = new HashMap<String, List<ViolationData>>();
 		properties.put("DATA", results);
 		
 		Event event = new Event("viewcommunication/syncEvent", properties);

@@ -1,13 +1,24 @@
 package codingstandards.views;
 
+import java.io.File;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -15,6 +26,8 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
+import codingstandards.process.ViolationData;
+import de.ralfebert.rcputils.tables.ColumnBuilder;
 import de.ralfebert.rcputils.tables.TableViewerBuilder;
 
 public class violationsView extends ViewPart {
@@ -28,31 +41,60 @@ public class violationsView extends ViewPart {
 		}
 		
 		TableViewerBuilder t = new TableViewerBuilder(parent);
-		t.createColumn("Violation").build();
-		t.createColumn("Line Number").build();
+		ColumnBuilder fileName = t.createColumn("File Name");
+		fileName.bindToProperty("fileName");
+		fileName.setPercentWidth(10);
+		fileName.useAsDefaultSortColumn();
+		fileName.build();
 		
-		tableViewer = t.getTableViewer();
+		ColumnBuilder violation = t.createColumn("Violation");
+		violation.bindToProperty("violation");
+		violation.setPercentWidth(40);
+		violation.build();
 		
-		tableViewer.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				return element.toString();
+		ColumnBuilder lineNumber = t.createColumn("Line Number");
+		lineNumber.bindToProperty("lineNumber");
+		lineNumber.setPercentWidth(10);
+		lineNumber.build();
+		
+		Table tT = t.getTable();
+		
+		tT.addListener(SWT.DefaultSelection, new Listener() {
+			@Override
+			public void handleEvent(org.eclipse.swt.widgets.Event e) {
+				IStructuredSelection tS = (IStructuredSelection) tableViewer.getSelection();
+				ViolationData d = (ViolationData) tS.getFirstElement();
+				File f = new File(d.getFilePath());
+				System.out.println(d.getFilePath());
+				if(f.exists() && f.isFile()) {
+					IFileStore fS = EFS.getLocalFileSystem().getStore(f.toURI());
+					IWorkbenchPage p = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					try {
+						IDE.openEditorOnFileStore(p, fS);
+					} catch (PartInitException e2) {
+						e2.printStackTrace();
+					}
+				} else {
+					MessageDialog.openInformation(
+							parent.getShell(),
+							"CodingStandardsAnalyser",
+							"Some files were not found.");
+				}
 			}
 		});
+		
+		tableViewer = t.getTableViewer();
 		
 		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 		
 		BundleContext ctx = FrameworkUtil.getBundle(violationsView.class).getBundleContext();
 		EventHandler handler = new EventHandler() {
 			public void handleEvent(final Event event) {
-				if(parent.getDisplay().getThread() == Thread.currentThread()) {
-					tableViewer.add(event.getProperty("DATA"));
-				} else {
-					parent.getDisplay().syncExec(new Runnable() {
-						public void run() {
-							tableViewer.setInput(event.getProperty("DATA"));
-						}
-					});
-				}
+				parent.getDisplay().syncExec(new Runnable() {
+					public void run() {
+						tableViewer.setInput(event.getProperty("DATA"));
+					}
+				});
 			}
 		};
 		
