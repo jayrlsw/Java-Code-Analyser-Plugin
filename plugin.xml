@@ -65,5 +65,19 @@
          	class="codingstandards.views.violationsView"
          	name="Violations"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="codingstandards.preferences.CodingStandardsPreferences"
+            id="codingstandards.preferences.CodingStandardsPreferences"
+            name="Coding Standards">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="codingstandards.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>
