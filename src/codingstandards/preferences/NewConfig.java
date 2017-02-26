@@ -12,10 +12,9 @@ public class NewConfig {
 		InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(),
 				"Create New Coding Standard", "Enter your new coding standard name:", "", new InputValidator());
 		if(dlg.open() == Window.OK) {
-			/*JsonHandler jH = new JsonHandler();
-			jH.addComponent(name, params);*/
-			System.out.println(dlg.getValue());
-			ConfigureConfig.configure(parent);
+			ConfigureConfig c = new ConfigureConfig();
+			DataHandler.addConfig(dlg.getValue());
+			c.configure(parent, dlg.getValue(), true);
 			return true;
 		}
 		else {

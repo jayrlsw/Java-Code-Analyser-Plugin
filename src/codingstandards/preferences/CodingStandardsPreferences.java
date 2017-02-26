@@ -1,6 +1,10 @@
 package codingstandards.preferences;
 
+import org.eclipse.core.resources.mapping.ModelProvider;
 import org.eclipse.jface.preference.*;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -11,8 +15,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
+import de.ralfebert.rcputils.tables.ColumnBuilder;
 import de.ralfebert.rcputils.tables.TableViewerBuilder;
 
 import org.eclipse.ui.IWorkbench;
@@ -22,6 +30,8 @@ public class CodingStandardsPreferences
 	implements IWorkbenchPreferencePage {
 	
 	private TableViewer tableViewer;
+	private DataHandler dH = new DataHandler();
+	private String cSC;
 	
 	public void init(IWorkbench workbench) {
 	}
@@ -39,46 +49,56 @@ public class CodingStandardsPreferences
 		tC.setLayout(new FormLayout());
 		tC.setLayoutData(new GridData(400, 300));
 		
-		TableViewerBuilder t = new TableViewerBuilder(tC, SWT.RADIO | SWT.BORDER);
-		t.createColumn("Configuration Name").setPixelWidth(200).build();
-		t.createColumn("Default").build();
+		TableViewerBuilder t = new TableViewerBuilder(tC, SWT.BORDER | SWT.V_SCROLL);
+		ColumnBuilder cN = t.createColumn("Configuration Name");
+		cN.setPixelWidth(200);
+		cN.bindToProperty("name");
+		cN.build();
 		
+		
+		//t.setInput(dH.tableFiller());
 		tableViewer = t.getTableViewer();
+		tableViewer.setContentProvider(new ArrayContentProvider());
+		tableViewer.setInput(dH.tableFiller());
+		
+		
+		Table tT = tableViewer.getTable();
+		tT.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				IStructuredSelection tS = (IStructuredSelection) tableViewer.getSelection();
+				DataHandler.ConfigList cLE = (DataHandler.ConfigList) tS.getFirstElement();
+				cSC = cLE.name;
+			}
+		});
 		
 		Composite bC = new Composite(c, SWT.CENTER);
 		bC.setLayout(new GridLayout());
 		createButtons(bC);
 		
-		getDefinitions();
-		
 		return null;
 	}
-	
-	void getDefinitions() {
-		/*		
-		System.out.println("SIZE: " + c.size());
 		
-		for(Object o : c) {
-			System.out.println(o.toString());
-		}*/
-	} 
-	
 	public void createButtons(Composite parent) {
 		Button newB = new Button(parent, SWT.PUSH);
 		newB.setText("New...");
 		newB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		newB.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				NewConfig.create(parent.getShell());
+				boolean created = NewConfig.create(parent.getShell());
+				if(created) {
+					refreshList();
+				}
 			}
 		});
 		
 		Button removeB = new Button(parent, SWT.PUSH);
-		removeB.setText("Remove...");
+		removeB.setText("Remove");
 		removeB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		removeB.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				
+				DataHandler.removeConfig(cSC);
+				refreshList();
 			}
 		});
 		
@@ -87,7 +107,10 @@ public class CodingStandardsPreferences
 		configureB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		configureB.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				ConfigureConfig.configure(parent.getShell());
+				if(cSC != null) {
+					ConfigureConfig configure = new ConfigureConfig();
+					configure.configure(parent.getShell(), cSC, false);
+				}
 			}
 		});
 		
@@ -96,7 +119,8 @@ public class CodingStandardsPreferences
 		importB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		importB.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				JsonDisplay.createDisplay(parent.getShell(), false);
+				JsonDisplay jD = new JsonDisplay();
+				jD.createDisplay(parent.getShell(), false, cSC);
 			}
 		});
 		
@@ -105,9 +129,15 @@ public class CodingStandardsPreferences
 		exportB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		exportB.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e) {
-				JsonDisplay.createDisplay(parent.getShell(), true);
+				JsonDisplay jD = new JsonDisplay();
+				jD.createDisplay(parent.getShell(), true, cSC);
 			}
 		});
+	}
+	
+	void refreshList() {
+		dH.setTableMaker();
+		tableViewer.refresh();
 	}
 	
 	public void setFocus() {

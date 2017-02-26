@@ -5,9 +5,10 @@ import java.util.List;
 
 public class Definitions {
 	
-	static List<Definition> d = new ArrayList<Definition>();
+	List<Definition> d;
 	
 	Definitions() {
+		d = new ArrayList<Definition>();
 		Definition columnLimit = new Definition();
 		columnLimit.setName("Column Limit");
 		columnLimit.setDescription("Number of characters allowed on one line.");
