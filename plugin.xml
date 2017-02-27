@@ -79,5 +79,16 @@
             class="codingstandards.preferences.PreferenceInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="codingstandardsanalyser.properties.ProjectProperties"
+            adaptable="true"
+            id="codingstandardsanalyser.properties.analyserPropertyPage"
+            objectClass="org.eclipse.core.resources.IProject"
+            name="Coding Standards"
+            nameFilter="*">
+      </page>
+   </extension>
 
 </plugin>

@@ -13,7 +13,7 @@ public class DataHandler {
 	final static String listN = "configList";
 	static List<ConfigList> configL = new LinkedList<ConfigList>();
 	
-	DataHandler() {
+	public DataHandler() {
 		setTableMaker();
 	}
 	
@@ -87,7 +87,7 @@ public class DataHandler {
 		}
 	}
 	
-	List<ConfigList> tableFiller() {
+	public List<ConfigList> tableFiller() {
 		return configL;
 	}
 	
@@ -97,7 +97,7 @@ public class DataHandler {
 		}
 	}
 	
-	class ConfigList {
+	public class ConfigList {
 		String name;
 		ConfigList(String name) {
 			this.name = name;
