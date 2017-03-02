@@ -16,14 +16,14 @@ public class Configuration {
 		rule.add(r);
 	}
 	
-	Rule getRule(String name) {
+	public Rule getRule(String name) {
 		for(Rule r : rule) {
 			if(r.getName().equals(name)) return r;
 		}
 		return null;
 	}
 	
-	void printRules() {
+	public void printRules() {
 		for(Rule r : rule) {
 			System.out.println(r.getName());
 		}

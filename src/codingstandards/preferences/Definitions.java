@@ -7,28 +7,26 @@ public class Definitions {
 	
 	List<Definition> d;
 	
-	Definitions() {
+	public Definitions() {
 		d = new ArrayList<Definition>();
 		Definition columnLimit = new Definition();
 		columnLimit.setName("Column Limit");
 		columnLimit.setDescription("Number of characters allowed on one line.");
-		columnLimit.addParams("CharPerLine", "Characters per line", Definition.TEXTBOX);
+		columnLimit.addParams("MaxCharPerLine", "Characters per line", Definition.TEXTBOX);
 		d.add(columnLimit);
 		
-		Definition test = new Definition();
-		test.setName("Test");
-		test.setDescription("This is a test.");
-		test.addParams("Test1", "Tick this box", Definition.CHECKBOX);
-		d.add(test);
+		Definition commentAlignment = new Definition();
+		commentAlignment.setName("Comment Alignment");
+		commentAlignment.setDescription("Comment alignment is the practice of adding a variable number of additional spaces in your code with the goal of making certain tokens appear directly below certain other tokens on previous lines.");
+		commentAlignment.addParams("RequireAlignment", "Stop horizontal alignment", Definition.CHECKBOX);
+		d.add(commentAlignment);
 		
-		Definition test2 = new Definition();
-		test2.setName("Test Two");
-		test2.setDescription("This is another test.");
-		test2.addParams("Test1", "Here, have a box.", Definition.CHECKBOX);
-		test2.addParams("Test2", "Here, have another box.", Definition.CHECKBOX);
-		test2.addParams("Test3", "How about a text box this time?", Definition.TEXTBOX);
-		test2.addParams("Test4", "Finally, another check box.", Definition.CHECKBOX);
-		d.add(test2);
+		Definition packageNames = new Definition();
+		packageNames.setName("Package Names");
+		packageNames.setDescription("Package name rules define how spacing and capitalisation should be applied to package name. This is done to avoid confusion between class and method names.");
+		packageNames.addParams("RequireLowerCase", "Require lower case package names", Definition.CHECKBOX);
+		packageNames.addParams("AllowSpaces", "Allow spaces in package names", Definition.CHECKBOX);
+		d.add(packageNames);
 	}
 	
 	public List<Definition> getDefinitions() {

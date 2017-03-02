@@ -9,11 +9,11 @@ public class Parameter {
 		this.value = value;
 	}
 	
-	String getName() {
+	public String getName() {
 		return name;
 	}
 	
-	String getValue() {
+	public String getValue() {
 		return value;
 	}
 	

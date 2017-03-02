@@ -30,19 +30,19 @@ public class Rule {
 		return null;
 	}
 	
-	String getName() {
+	public String getName() {
 		return name;
 	}
 	
-	String getEnabled() {
+	public String getEnabled() {
 		return enabled;
 	}
 	
-	List<Parameter> getParams() {
+	public List<Parameter> getParams() {
 		return params;
 	}
 	
-	void printRule() {
+	public void printRule() {
 		System.out.println(name + " " + enabled);
 	}
 }

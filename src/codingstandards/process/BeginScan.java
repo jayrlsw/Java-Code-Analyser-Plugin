@@ -4,9 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,9 +41,12 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
 import codingstandards.definition.ColumnLimit;
+import codingstandards.preferences.Definition;
+import codingstandards.preferences.Definitions;
 public class BeginScan {
 	
 	static IProject project;
+	static IResource hResource;
 	static Map<String, String> options;
 	static String path;
 	
@@ -51,7 +59,7 @@ public class BeginScan {
 		
 		List<ViolationData> results = new ArrayList<ViolationData>();
 		
-		IResource hResource = (IResource)Platform.getAdapterManager().getAdapter(files.getFirstElement(), IResource.class);
+		hResource = (IResource)Platform.getAdapterManager().getAdapter(files.getFirstElement(), IResource.class);
 		
 		project = hResource.getProject();
 		
@@ -65,7 +73,6 @@ public class BeginScan {
 			Object f = i.next();
 			
 			/*if(f instanceof IFile) {
-				System.out.println("IFile found.");
 				IFile file = (IFile) f;
 			
 				IPath path = file.getLocation();
@@ -79,7 +86,6 @@ public class BeginScan {
 			}*/
 		
 			if (f instanceof ICompilationUnit) {
-				System.out.println("ICompilationUnit found.");
 				ICompilationUnit cu = (ICompilationUnit) f;
 				IResource resource = null;
 				try {
@@ -121,17 +127,32 @@ public class BeginScan {
 		
 		List<ViolationData> fOutput = new ArrayList<ViolationData>();
 		String str = "";
-		int lC = 1;
+		List<String> strL = new ArrayList<String>();
 		while((str = io.readLine()) != null) {
 			str = replaceIndentation(str);
-			ColumnLimit c = new ColumnLimit();
-			ViolationData r = c.scan(str, 100);
-			if (r != null) {
-				r.setLineNumber(lC);
-				r.setFilename(path);
-				fOutput.add(r);
+			strL.add(str);
+		}
+		List<Definition> dList = new ArrayList<Definition>();
+		Definitions defs = new Definitions();
+		dList = defs.getDefinitions();
+		for(Definition d : dList) {
+			String className = d.getName().replaceAll(" ", "");
+			List<ViolationData> result = new LinkedList<ViolationData>();
+			try {
+				Class<?> clazz = Class.forName("codingstandards.definition." + className);
+				Method m = clazz.getDeclaredMethod("scan", List.class, IResource.class);
+				Object object = clazz.newInstance();
+				result = (List<ViolationData>)m.invoke(object, strL, hResource);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| NoSuchMethodException | ClassNotFoundException | InvocationTargetException e) {
+				e.printStackTrace();
 			}
-			lC++;
+			for(ViolationData vD : result) {
+				if (vD != null) {
+					vD.setFilename(path);
+					fOutput.add(vD);
+				}
+			}
 		}
 		
 		return fOutput;
