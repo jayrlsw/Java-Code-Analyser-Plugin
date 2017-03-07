@@ -1,4 +1,4 @@
-package codingstandardsanalyser.properties;
+package codingstandards.properties;
 
 import java.util.LinkedList;
 import java.util.List;

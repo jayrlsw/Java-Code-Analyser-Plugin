@@ -82,9 +82,9 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            class="codingstandardsanalyser.properties.ProjectProperties"
+            class="codingstandards.properties.ProjectProperties"
             adaptable="true"
-            id="codingstandardsanalyser.properties.analyserPropertyPage"
+            id="codingstandards.properties.analyserPropertyPage"
             objectClass="org.eclipse.core.resources.IProject"
             name="Coding Standards"
             nameFilter="*">
