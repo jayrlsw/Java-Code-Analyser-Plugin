@@ -13,6 +13,11 @@
             id="CodingStandardsAnalyser.commands.analysis"
             name="Analyse Code">
       </command>
+      <command
+            categoryId="CodingStandardsAnalyser.commands.clearViolations"
+            id="CodingStandardsAnalyser.commands.clearer"
+            name="Clear Violations">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -20,11 +25,21 @@
             class="codingstandards.handlers.ScanResources"
             commandId="CodingStandardsAnalyser.commands.analysis">
       </handler>
+      <handler 
+            class="codingstandards.handlers.ClearViolations"
+            commandId="CodingStandardsAnalyser.commands.clearer">
+      </handler>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="CodingStandardsAnalyser.commands.analysis"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+      </key>
+      <key
+            commandId="CodingStandardsAnalyser.commands.clearer"
             contextId="org.eclipse.ui.contexts.window"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+6">
@@ -41,6 +56,19 @@
             <command
                   commandId="CodingStandardsAnalyser.commands.analysis"
                   id="CodingStandardsAnalyser.menus.analysis"
+                  mnemonic="S">
+                  <visibleWhen>
+                  	<with variable="activeMenuSelection">
+                  		<iterate
+                  			ifEmpty="false">
+                  			<adapt type="org.eclipse.core.resources.IResource" />
+                  		</iterate>
+                 	</with>
+                  </visibleWhen>
+            </command>
+            <command
+                  commandId="CodingStandardsAnalyser.commands.clearer"
+                  id="CodingStandardsAnalyser.menus.clearer"
                   mnemonic="S">
                   <visibleWhen>
                   	<with variable="activeMenuSelection">
@@ -89,6 +117,10 @@
             name="Coding Standards"
             nameFilter="*">
       </page>
+   </extension>
+   <extension id="codingstandards.violationmarker" point="org.eclipse.core.resources.markers">
+         <super type="org.eclipse.core.resources.problemmarker"/>
+         <persistent value="true"/>
    </extension>
 
 </plugin>

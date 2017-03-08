@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 
+import codingstandards.process.BeginScan;
 import codingstandards.process.GetSettings;
+import codingstandards.process.SyntaxHighlighter;
 import codingstandards.process.ViolationData;
 
 public class CommentAlignment {
@@ -24,7 +26,7 @@ public class CommentAlignment {
 		if(!Boolean.parseBoolean(params.get(0))) return d;
 		List<Integer> check = new LinkedList<Integer>();
 		for(int i = 0; i < doc.size(); i++) {
-			String line = doc.get(i);
+			String line = BeginScan.replaceIndentation(doc.get(i));
 			
 			char[] cArr = line.toCharArray();
 			int count = 0;
@@ -33,7 +35,8 @@ public class CommentAlignment {
 				if(lastChar == '/' && c == '/') {
 					count--;
 					check.add(count);
-					d.add(new ViolationData(name, violation, new int[] {i + 1, count}));
+					System.out.println("Count = " + count);
+					d.add(new ViolationData(name, violation, new int[] {i + 1, SyntaxHighlighter.getOffset(doc, i, count), i + 1, doc.get(i).length() - count}));
 				}
 				lastChar = c;
 				count++;

@@ -48,7 +48,7 @@ public class PackageNames {
 					else if (capitalisation) result = "Capitalisation";
 					else if (spaces) result = "Spaces";
 					String s = String.format(violation, result);
-					d.add(new ViolationData(name, s, new int[] {lC, 8}));
+					d.add(new ViolationData(name, s, new int[] {lC, 8, lC, line.length() - 1}));
 				}
 			}
 			

@@ -7,23 +7,20 @@ public class ViolationData {
 	String name;
 	String violation;
 	int[] pos = new int[4];
-	int lineNumber;
 	String fileName;
 	String filePath;
 	
 	public ViolationData(String name, String violation, int[] pos) {
 		this.name = name;
 		this.violation = violation;
-		this.lineNumber = pos[0]; //Start Line number
+		this.pos[0] = pos[0]; //Start Line number
 		this.pos[1] = pos[1]; //Start position
-		if(pos.length > 2) {
-			this.pos[2] = pos[2]; //End line number
-			this.pos[3] = pos[3]; //End position
-		}
+		this.pos[2] = pos[2]; //End line number
+		this.pos[3] = pos[3]; //End position
 	}
 	
 	public void setLineNumber(int lineNumber) {
-		this.lineNumber = lineNumber;
+		this.pos[0] = lineNumber;
 	}
 	
 	public void setFilename(String filePath) {
@@ -44,7 +41,19 @@ public class ViolationData {
 	}
 	
 	public int getLineNumber() {
-		return lineNumber;
+		return pos[0];
+	}
+	
+	public int getEndLineNumber() {
+		return pos[2];
+	}
+	
+	public int getStartChar() {
+		return pos[1];
+	}
+	
+	public int getEndChar() {
+		return pos[3] + pos[1];
 	}
 	
 	public String getFileName() {

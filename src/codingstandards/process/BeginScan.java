@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,7 +38,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 
-import codingstandards.definition.ColumnLimit;
 import codingstandards.preferences.Definition;
 import codingstandards.preferences.Definitions;
 public class BeginScan {
@@ -115,6 +112,7 @@ public class BeginScan {
 		
 		}
 				
+		SyntaxHighlighter.placeMarkers(results, hResource);
 		displayViolations(results);
 		
 		MessageDialog.openInformation(
@@ -129,7 +127,6 @@ public class BeginScan {
 		String str = "";
 		List<String> strL = new ArrayList<String>();
 		while((str = io.readLine()) != null) {
-			str = replaceIndentation(str);
 			strL.add(str);
 		}
 		List<Definition> dList = new ArrayList<Definition>();
@@ -158,11 +155,14 @@ public class BeginScan {
 		return fOutput;
 	}
 	
-	static String replaceIndentation(String str) {
-		int tabWidth = IndentManipulation.getTabWidth(options);
-		String sR = new String(new char[tabWidth]).replace("\0", " ");
+	public static String replaceIndentation(String str) {
+		String sR = new String(new char[getTabWidth()]).replace("\0", " ");
 		str = str.replaceAll("\t", sR);
 		return str;
+	}
+	
+	static int getTabWidth() {
+		return IndentManipulation.getTabWidth(options);
 	}
 	
 	static void displayViolations(List<ViolationData> results) {

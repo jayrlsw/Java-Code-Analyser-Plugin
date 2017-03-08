@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 
+import codingstandards.process.BeginScan;
 import codingstandards.process.GetSettings;
+import codingstandards.process.SyntaxHighlighter;
 import codingstandards.process.ViolationData;
 
 public class ColumnLimit {
@@ -27,12 +29,12 @@ public class ColumnLimit {
 		colnum = Integer.parseInt(params.get(0));
 		
 		for(int i = 0; i < str.size(); i++) {
-			String line = str.get(i);
+			String line = BeginScan.replaceIndentation(str.get(i));
 			int lC = i + 1;
 			if(line.length() > colnum) {
 				Object[] format = new Object[] { line.length(), colnum };
 				String s = String.format(violation, format);
-				d.add(new ViolationData(name, s, new int[] {lC, line.length()}));
+				d.add(new ViolationData(name, s, new int[] {lC, SyntaxHighlighter.getOffset(str, i, 0), lC, str.get(i).length()}));
 			}
 		}
 		
