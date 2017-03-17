@@ -16,7 +16,7 @@ import codingstandards.preferences.Rule;
 public class GetSettings {
 	
 	public static List<String> getValue(String name, IResource resource) {
-		IProject project = resource.getProject();
+		final IProject project = resource.getProject();
 		String configName = null;
 		try {
 			configName = project.getPersistentProperty(new QualifiedName("CODEANALYSER", "ChosenConfig"));
@@ -24,17 +24,19 @@ public class GetSettings {
 			e.printStackTrace();
 		}
 		
-		Configuration config = JsonHandler.getConfig(configName);
-		Rule rule = config.getRule(name);
-		if(!Boolean.parseBoolean(rule.getEnabled())) return null;
+		final Configuration config = JsonHandler.getConfig(configName);
+		final Rule rule = config.getRule(name);
+		if(!Boolean.parseBoolean(rule.getEnabled())) {
+			return null;
+		}
 		List<Parameter> params = new ArrayList<Parameter>();
 		params = rule.getParams();
-		List<String> pL = new ArrayList<String>();
-		for(Parameter p : params) {
-			pL.add(p.getValue());
+		final List<String> paramList = new ArrayList<String>();
+		for(final Parameter p : params) {
+			paramList.add(p.getValue());
 		}
 		
-		return pL;
+		return paramList;
 	}
 	
 }

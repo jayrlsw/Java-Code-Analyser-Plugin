@@ -3,7 +3,6 @@ package codingstandards.properties;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
@@ -29,10 +28,10 @@ public class ProjectProperties extends PropertyPage {
 	
 	protected Control createContents(Composite parent) {		
 		noDefaultButton();
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
+		final Composite composite = new Composite(parent, SWT.NONE);
+		final GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
-		GridData data = new GridData(GridData.FILL);
+		final GridData data = new GridData(GridData.FILL);
 		data.grabExcessHorizontalSpace = true;
 		composite.setLayoutData(data);
 
@@ -41,9 +40,9 @@ public class ProjectProperties extends PropertyPage {
 		
 		combo = new Combo(composite, SWT.READ_ONLY);
 		List<DataHandler.ConfigList> listData = new LinkedList<DataHandler.ConfigList>();
-		DataHandler dH = new DataHandler();
-		listData = dH.tableFiller();
-		for(DataHandler.ConfigList d : listData) {
+		final DataHandler dataHandler = new DataHandler();
+		listData = dataHandler.tableFiller();
+		for(final DataHandler.ConfigList d : listData) {
 			combo.add(d.getName());
 		}
 		
@@ -52,7 +51,7 @@ public class ProjectProperties extends PropertyPage {
 	}
 	
 	private void initialiseValues() {
-		IResource resource = (IResource) getElement();
+		final IResource resource = (IResource) getElement();
 		String newSet = null;
 		try {
 			newSet = resource.getPersistentProperty(new QualifiedName("CODEANALYSER", "ChosenConfig"));
@@ -65,7 +64,7 @@ public class ProjectProperties extends PropertyPage {
 	}
 	
 	private void storeValues() {
-		IResource resource = (IResource) getElement();
+		final IResource resource = (IResource) getElement();
 		try {
 			resource.setPersistentProperty(new QualifiedName("CODEANALYSER", "ChosenConfig"), combo.getText());
 		} catch (CoreException e) {

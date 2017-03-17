@@ -23,9 +23,8 @@ public class Configuration {
 		return null;
 	}
 	
-	public void printRules() {
-		for(Rule r : rule) {
-			System.out.println(r.getName());
-		}
+	public String getName() {
+		return name;
 	}
+	
 }

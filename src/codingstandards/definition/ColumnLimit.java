@@ -11,9 +11,7 @@ import codingstandards.process.SyntaxHighlighter;
 import codingstandards.process.ViolationData;
 
 public class ColumnLimit {
-	
-	int colnum;
-	
+		
 	final String name = "Max characters per line";
 	final String description = "A high number of characters in a line of code may decrease readability.";
 	final String violation = "%d characters found on line. Maximum should be %d.";
@@ -22,22 +20,25 @@ public class ColumnLimit {
 	
 	public List<ViolationData> scan(List<String> str, IResource r) {
 		
-		List<ViolationData> d = new LinkedList<ViolationData>();
+		final List<ViolationData> dataList = new LinkedList<ViolationData>();
 		
-		List<String> params = GetSettings.getValue("Column Limit", r);
-		if(params == null) return d;
-		colnum = Integer.parseInt(params.get(0));
+		final List<String> params = GetSettings.getValue("Column Limit", r); 
+		
+		if(params == null) {
+			return dataList;
+		}
 		
 		for(int i = 0; i < str.size(); i++) {
-			String line = BeginScan.replaceIndentation(str.get(i));
-			int lC = i + 1;
+			final int colnum = Integer.parseInt(params.get(0));
+			final String line = BeginScan.replaceIndentation(str.get(i));
 			if(line.length() > colnum) {
+				final int lineCount = i + 1;
 				Object[] format = new Object[] { line.length(), colnum };
-				String s = String.format(violation, format);
-				d.add(new ViolationData(name, s, new int[] {lC, SyntaxHighlighter.getOffset(str, i, 0), lC, str.get(i).length()}));
+				final String violationInfo = String.format(violation, format);
+				dataList.add(new ViolationData(name, violationInfo, new int[] {lineCount, SyntaxHighlighter.getOffset(str, i, 0), lineCount, str.get(i).length()}));
 			}
 		}
 		
-		return d;
+		return dataList;
 	}
 }

@@ -31,11 +31,11 @@ public class Definition {
 		this.description = description;
 	}
 	
-	void addParams(String param1, String param2, String param3) {
-		String[] p = new String[3];
-		p[0] = param1;
-		p[1] = param2;
-		p[2] = param3;
-		this.params.add(p);
+	void addParams(final String param1, final String param2, final String param3) {
+		String[] parameters = new String[3];
+		parameters[0] = param1;
+		parameters[1] = param2;
+		parameters[2] = param3;
+		this.params.add(parameters);
 	}
 }

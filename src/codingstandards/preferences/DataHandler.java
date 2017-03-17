@@ -17,16 +17,16 @@ public class DataHandler {
 		setTableMaker();
 	}
 	
-	static String getPreferences(String name) {
-		IEclipsePreferences store = InstanceScope.INSTANCE.getNode("codingstandards.preferences");
+	static String getPreferences(final String name) {
+		final IEclipsePreferences store = InstanceScope.INSTANCE.getNode("codingstandards.preferences");
 		if(store != null) {
 			return store.get(name, "");
 		}
 		return null;
 	}
 	
-	static void setPreferences(String id, String data) {
-		IEclipsePreferences store = InstanceScope.INSTANCE.getNode("codingstandards.preferences");
+	static void setPreferences(final String id, final String data) {
+		final IEclipsePreferences store = InstanceScope.INSTANCE.getNode("codingstandards.preferences");
 		store.put(id, data);
 		
 		try {
@@ -36,65 +36,67 @@ public class DataHandler {
 		}
 	}
 	
-	static void addConfig(String name) {
-		List<String> s = getConfigs();
-		s.add(name);
-		buildConfigs(s);
+	static void addConfig(final String name) {
+		List<String> configs = getConfigs();
+		configs.add(name);
+		buildConfigs(configs);
 	}
 	
-	static void removeConfig(String name) {
+	static void removeConfig(final String name) {
 		if(name != null){
-			List<String> s = getConfigs();
-			if(!s.contains(name)) return;
-			s.remove(name);
-			buildConfigs(s);
+			final List<String> config = getConfigs();
+			if(!config.contains(name)) {
+				return;
+			}
+			config.remove(name);
+			buildConfigs(config);
 		}
 	}
 	
-	static void buildConfigs(List<String> s) {
-		StringBuilder sB = new StringBuilder(); 
-		for(String c : s) {
-			sB.append(c);
-			sB.append(";");
+	static void buildConfigs(final List<String> s) {
+		final StringBuilder stringBuilder = new StringBuilder(); 
+		for(final String c : s) {
+			stringBuilder.append(c);
+			stringBuilder.append(';');
 		}
-		if(sB.length() > 0) {
-			sB.setLength(sB.length() - 1);
+		if(stringBuilder.length() > 0) {
+			stringBuilder.setLength(stringBuilder.length() - 1);
 		}
-		setPreferences(listN, sB.toString());
+		setPreferences(listN, stringBuilder.toString());
 	}
 	
 	
-	boolean checkExistence(String name) {
-		for(ConfigList c : configL) {
-			if(c.name.equals(name)) return true;
+	boolean checkExistence(final String name) {
+		boolean result = false;
+		for(final ConfigList c : configL) {
+			if(c.name.equals(name)) {
+				result =  true;
+				break;
+			}
 		}
-		return false;
+		return result;
 	}
 	
 	static List<String> getConfigs() {
-		String p = getPreferences(listN);
-		List<String> configList = new LinkedList<String>(Arrays.asList(p.split(";")));
+		final String preferences = getPreferences(listN);
+		final List<String> configList = new LinkedList<String>(Arrays.asList(preferences.split(";")));
 		return configList;
 	}
 	
 	void setTableMaker() {
-		List<String> configs = getConfigs();
+		final List<String> configs = getConfigs();
 		configL.clear();
-		if(configs.size() < 1) return;
-		for(String s : configs) {
-			ConfigList cL = new ConfigList(s);
-			configL.add(cL);
+		if(configs.size() < 1) {
+			return;
+		}
+		for(final String s : configs) {
+			final ConfigList configList = new ConfigList(s);
+			configL.add(configList);
 		}
 	}
 	
 	public List<ConfigList> tableFiller() {
 		return configL;
-	}
-	
-	void printConfigs() {
-		for(ConfigList c : configL) {
-			System.out.println(c.getName());
-		}
 	}
 	
 	public class ConfigList {

@@ -36,38 +36,37 @@ public class violationsView extends ViewPart {
 	
 	public void createPartControl(Composite parent) {
 		
-		for(Control control : parent.getChildren()) {
+		for(final Control control : parent.getChildren()) {
 			control.dispose();
 		}
 		
-		TableViewerBuilder t = new TableViewerBuilder(parent);
-		ColumnBuilder fileName = t.createColumn("File Name");
+		final TableViewerBuilder tableBuilder = new TableViewerBuilder(parent);
+		final ColumnBuilder fileName = tableBuilder.createColumn("File Name");
 		fileName.bindToProperty("fileName");
 		fileName.setPercentWidth(10);
 		fileName.useAsDefaultSortColumn();
 		fileName.build();
 		
-		ColumnBuilder violation = t.createColumn("Violation");
+		final ColumnBuilder violation = tableBuilder.createColumn("Violation");
 		violation.bindToProperty("violation");
 		violation.setPercentWidth(40);
 		violation.build();
 		
-		ColumnBuilder lineNumber = t.createColumn("Line Number");
+		final ColumnBuilder lineNumber = tableBuilder.createColumn("Line Number");
 		lineNumber.bindToProperty("lineNumber");
 		lineNumber.setPercentWidth(10);
 		lineNumber.build();
 		
-		Table tT = t.getTable();
+		final Table tT = tableBuilder.getTable();
 		
 		tT.addListener(SWT.DefaultSelection, new Listener() {
 			@Override
-			public void handleEvent(org.eclipse.swt.widgets.Event e) {
-				IStructuredSelection tS = (IStructuredSelection) tableViewer.getSelection();
-				ViolationData d = (ViolationData) tS.getFirstElement();
-				File f = new File(d.getFilePath());
-				System.out.println(d.getFilePath());
-				if(f.exists() && f.isFile()) {
-					IFileStore fS = EFS.getLocalFileSystem().getStore(f.toURI());
+			public void handleEvent(org.eclipse.swt.widgets.Event event) {
+				final IStructuredSelection tableSelector = (IStructuredSelection) tableViewer.getSelection();
+				final ViolationData data = (ViolationData) tableSelector.getFirstElement();
+				final File file = new File(data.getFilePath());
+				if(file.exists() && file.isFile()) {
+					IFileStore fS = EFS.getLocalFileSystem().getStore(file.toURI());
 					IWorkbenchPage p = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					try {
 						IDE.openEditorOnFileStore(p, fS);
@@ -83,12 +82,12 @@ public class violationsView extends ViewPart {
 			}
 		});
 		
-		tableViewer = t.getTableViewer();
+		tableViewer = tableBuilder.getTableViewer();
 		
 		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 		
-		BundleContext ctx = FrameworkUtil.getBundle(violationsView.class).getBundleContext();
-		EventHandler handler = new EventHandler() {
+		final BundleContext context = FrameworkUtil.getBundle(violationsView.class).getBundleContext();
+		final EventHandler handler = new EventHandler() {
 			public void handleEvent(final Event event) {
 				parent.getDisplay().syncExec(new Runnable() {
 					public void run() {
@@ -98,9 +97,9 @@ public class violationsView extends ViewPart {
 			}
 		};
 		
-		Dictionary<String, String> properties = new Hashtable<String, String>();
+		final Dictionary<String, String> properties = new Hashtable<String, String>();
 		properties.put(EventConstants.EVENT_TOPIC, "viewcommunication/*");
-		ctx.registerService(EventHandler.class, handler, properties);
+		context.registerService(EventHandler.class, handler, properties);
 	}
 
 	@Override

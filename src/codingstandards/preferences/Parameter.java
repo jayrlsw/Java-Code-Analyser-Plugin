@@ -4,7 +4,7 @@ public class Parameter {
 	private String name;
 	private String value;
 	
-	Parameter(String name, String value) {
+	Parameter(final String name, final String value) {
 		this.name = name;
 		this.value = value;
 	}
@@ -15,9 +15,5 @@ public class Parameter {
 	
 	public String getValue() {
 		return value;
-	}
-	
-	void printParameter() {
-		System.out.println(name + " " + value);
 	}
 }

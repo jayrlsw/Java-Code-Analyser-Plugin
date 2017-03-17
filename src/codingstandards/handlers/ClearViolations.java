@@ -16,10 +16,10 @@ public class ClearViolations extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-		ISelectionService service = window.getSelectionService();
-		IStructuredSelection files = (IStructuredSelection) service.getSelection();
-		IResource hResource = (IResource)Platform.getAdapterManager().getAdapter(files.getFirstElement(), IResource.class);
+		final IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+		final ISelectionService service = window.getSelectionService();
+		final IStructuredSelection files = (IStructuredSelection) service.getSelection();
+		final IResource hResource = (IResource)Platform.getAdapterManager().getAdapter(files.getFirstElement(), IResource.class);
 		
 		SyntaxHighlighter.deleteMarkers(hResource);
 		return null;

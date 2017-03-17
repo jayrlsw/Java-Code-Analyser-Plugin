@@ -1,9 +1,7 @@
 package codingstandards.preferences;
 
-import org.eclipse.core.resources.mapping.ModelProvider;
 import org.eclipse.jface.preference.*;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -30,8 +28,8 @@ public class CodingStandardsPreferences
 	implements IWorkbenchPreferencePage {
 	
 	private TableViewer tableViewer;
-	private DataHandler dH = new DataHandler();
-	private String cSC;
+	private DataHandler dataHandler = new DataHandler();
+	private String currentSelection;
 	
 	public void init(IWorkbench workbench) {
 	}
@@ -41,102 +39,102 @@ public class CodingStandardsPreferences
 		
 		noDefaultAndApplyButton();
 		
-		Composite c = new Composite(parent, 0);
-		c.setLayout(new GridLayout(2, true));
-		c.setLayoutData(new GridData(500, 400));
+		final Composite composite = new Composite(parent, 0);
+		composite.setLayout(new GridLayout(2, true));
+		composite.setLayoutData(new GridData(500, 400));
 		
-		Composite tC = new Composite(c, SWT.BEGINNING);
-		tC.setLayout(new FormLayout());
-		tC.setLayoutData(new GridData(400, 300));
+		final Composite tableComposite = new Composite(composite, SWT.BEGINNING);
+		tableComposite.setLayout(new FormLayout());
+		tableComposite.setLayoutData(new GridData(400, 300));
 		
-		TableViewerBuilder t = new TableViewerBuilder(tC, SWT.BORDER | SWT.V_SCROLL);
-		ColumnBuilder cN = t.createColumn("Configuration Name");
-		cN.setPixelWidth(200);
-		cN.bindToProperty("name");
-		cN.build();
+		TableViewerBuilder t = new TableViewerBuilder(tableComposite, SWT.BORDER | SWT.V_SCROLL);
+		final ColumnBuilder configurationName = t.createColumn("Configuration Name");
+		configurationName.setPixelWidth(200);
+		configurationName.bindToProperty("name");
+		configurationName.build();
 		
 		
 		//t.setInput(dH.tableFiller());
 		tableViewer = t.getTableViewer();
 		tableViewer.setContentProvider(new ArrayContentProvider());
-		tableViewer.setInput(dH.tableFiller());
+		tableViewer.setInput(dataHandler.tableFiller());
 		
 		
-		Table tT = tableViewer.getTable();
-		tT.addListener(SWT.Selection, new Listener() {
+		final Table viewerTable = tableViewer.getTable();
+		viewerTable.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				IStructuredSelection tS = (IStructuredSelection) tableViewer.getSelection();
-				DataHandler.ConfigList cLE = (DataHandler.ConfigList) tS.getFirstElement();
-				cSC = cLE.name;
+				final IStructuredSelection tableSelector = (IStructuredSelection) tableViewer.getSelection();
+				final DataHandler.ConfigList cLE = (DataHandler.ConfigList) tableSelector.getFirstElement();
+				currentSelection = cLE.name;
 			}
 		});
 		
-		Composite bC = new Composite(c, SWT.CENTER);
-		bC.setLayout(new GridLayout());
-		createButtons(bC);
+		final Composite buttonComposite = new Composite(composite, SWT.CENTER);
+		buttonComposite.setLayout(new GridLayout());
+		createButtons(buttonComposite);
 		
 		return null;
 	}
 		
 	public void createButtons(Composite parent) {
-		Button newB = new Button(parent, SWT.PUSH);
+		final Button newB = new Button(parent, SWT.PUSH);
 		newB.setText("New...");
 		newB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		newB.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e) {
-				boolean created = NewConfig.create(parent.getShell());
+			public void widgetSelected(SelectionEvent event) {
+				final boolean created = NewConfig.create(parent.getShell());
 				if(created) {
 					refreshList();
 				}
 			}
 		});
 		
-		Button removeB = new Button(parent, SWT.PUSH);
+		final Button removeB = new Button(parent, SWT.PUSH);
 		removeB.setText("Remove");
 		removeB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		removeB.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e) {
-				DataHandler.removeConfig(cSC);
+			public void widgetSelected(SelectionEvent event) {
+				DataHandler.removeConfig(currentSelection);
 				refreshList();
 			}
 		});
 		
-		Button configureB = new Button(parent, SWT.PUSH);
+		final Button configureB = new Button(parent, SWT.PUSH);
 		configureB.setText("Configure...");
 		configureB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		configureB.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e) {
-				if(cSC != null) {
-					ConfigureConfig configure = new ConfigureConfig();
-					configure.configure(parent.getShell(), cSC, false);
+			public void widgetSelected(SelectionEvent event) {
+				if(currentSelection != null) {
+					final ConfigureConfig configure = new ConfigureConfig();
+					configure.configure(parent.getShell(), currentSelection, false);
 				}
 			}
 		});
 		
-		Button importB = new Button(parent, SWT.PUSH);
+		final Button importB = new Button(parent, SWT.PUSH);
 		importB.setText("Import...");
 		importB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		importB.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e) {
-				JsonDisplay jD = new JsonDisplay();
-				jD.createDisplay(parent.getShell(), false, cSC);
+			public void widgetSelected(SelectionEvent event) {
+				final JsonDisplay jsonDisplay = new JsonDisplay();
+				jsonDisplay.createDisplay(parent.getShell(), false, currentSelection);
 			}
 		});
 		
-		Button exportB = new Button(parent, SWT.PUSH);
+		final Button exportB = new Button(parent, SWT.PUSH);
 		exportB.setText("Export...");
 		exportB.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		exportB.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e) {
-				JsonDisplay jD = new JsonDisplay();
-				jD.createDisplay(parent.getShell(), true, cSC);
+			public void widgetSelected(SelectionEvent event) {
+				final JsonDisplay jsonDisplay = new JsonDisplay();
+				jsonDisplay.createDisplay(parent.getShell(), true, currentSelection);
 			}
 		});
 	}
 	
 	void refreshList() {
-		dH.setTableMaker();
+		dataHandler.setTableMaker();
 		tableViewer.refresh();
 	}
 	

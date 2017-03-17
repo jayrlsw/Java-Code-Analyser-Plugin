@@ -14,27 +14,27 @@ public class PackageNames {
 	final String description = "All package names should be lowercase and spaceless to avoid confusing them with methods and classes.";
 	final String violation = "%s found inappropriately in package name.";
 	
-	public PackageNames() {
-		
-	}
+	public PackageNames() {}
 	
 	public List<ViolationData> scan(List<String> doc, IResource r) {
 		
-		List<ViolationData> d = new LinkedList<ViolationData>();
-		List<String> params = GetSettings.getValue("Package Names", r);
-		if(params == null) return d;
-		boolean forceLowerCase = Boolean.parseBoolean((params.get(0)));
-		boolean denySpaces = Boolean.parseBoolean(params.get(1));
+		final List<ViolationData> dataList = new LinkedList<ViolationData>();
+		final List<String> params = GetSettings.getValue("Package Names", r);
+		if(params == null) {
+			return dataList;
+		}
+		final boolean forceLowerCase = Boolean.parseBoolean((params.get(0)));
+		final boolean denySpaces = Boolean.parseBoolean(params.get(1));
 		
 		for(int i = 0; i < doc.size(); i++) {
-			String line = doc.get(i);
-			int lC = i + 1;
+			final String line = doc.get(i);
+			final int lineCount = i + 1;
 			if(line.startsWith("package")) {
-				char[] lineC = line.toCharArray();
+				final char[] lineC = line.toCharArray();
 				
 				boolean capitalisation = false;
-				boolean spaces = false;
-				for(char w : lineC) {
+				final boolean spaces = false;
+				for(final char w : lineC) {
 					if(forceLowerCase && !Character.isLowerCase(w) && Character.isLetter(w)) {
 						capitalisation = true;
 					}
@@ -44,17 +44,23 @@ public class PackageNames {
 				}
 				if(capitalisation || spaces) {
 					String result = "";
-					if(capitalisation && spaces) result = "Capitalisation and spaces";
-					else if (capitalisation) result = "Capitalisation";
-					else if (spaces) result = "Spaces";
-					String s = String.format(violation, result);
-					d.add(new ViolationData(name, s, new int[] {lC, 8, lC, line.length() - 1}));
+					/*if(capitalisation && spaces) {
+						result = "Capitalisation and spaces";
+					}
+					else */if (capitalisation) {
+						result = "Capitalisation";
+					}
+					else if (spaces) {
+						result = "Spaces";
+					}
+					final String violationInfo = String.format(violation, result);
+					dataList.add(new ViolationData(name, violationInfo, new int[] {lineCount, 8, lineCount, line.length() - 1}));
 				}
 			}
 			
 		}
 		
-		return d;
+		return dataList;
 	}
 	
 }

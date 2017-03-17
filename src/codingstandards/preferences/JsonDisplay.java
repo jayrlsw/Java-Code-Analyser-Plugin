@@ -6,7 +6,6 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -19,22 +18,22 @@ public class JsonDisplay {
 	
 	public void createDisplay(Shell parent, boolean export, String configName) {
 		this.parent = parent;
-		Shell shell = new Shell(parent);
+		final Shell shell = new Shell(parent);
 		shell.setSize(400, 490);
 		shell.setLayout(new GridLayout());
 		
 		new Label(shell, SWT.NONE).setText("Configuration (JSON):");
 		
-		Text tC = new Text(shell, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+		final Text tC = new Text(shell, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 		tC.setText(DataHandler.getPreferences(configName));
-		GridData gD = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		gD.heightHint = 26 * tC.getLineHeight();
-		tC.setLayoutData(gD);
+		final GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		gridData.heightHint = 26 * tC.getLineHeight();
+		tC.setLayoutData(gridData);
 		
-		Button cButton = new Button(shell, SWT.PUSH | SWT.CENTER);
+		final Button cButton = new Button(shell, SWT.PUSH | SWT.CENTER);
 		cButton.setText("Close");
 		cButton.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event e) {
+			public void handleEvent(Event event) {
 				shell.dispose();
 			}
 		});
@@ -47,18 +46,17 @@ public class JsonDisplay {
 		
 		setFont(tC);
 		
-		//shell.pack();
 		shell.open();
 	}
 	
-	void setFont(Text t) {
-		Font f = t.getFont();
-		FontData[] fD = f.getFontData();
-		for(int i = 0; i < fD.length; i++) {
-			fD[0].setName("Lucida Console");
+	void setFont(final Text textData) {
+		final Font font = textData.getFont();
+		final FontData[] fontData = font.getFontData();
+		for(int i = 0; i < fontData.length; i++) {
+			fontData[0].setName("Lucida Console");
 		}
-		Font nF = new Font(parent.getDisplay(), fD);
-		t.setFont(nF);
+		final Font newFont = new Font(parent.getDisplay(), fontData);
+		textData.setFont(newFont);
 	}
 	
 }

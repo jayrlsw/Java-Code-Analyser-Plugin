@@ -15,39 +15,36 @@ import org.eclipse.core.runtime.Path;
 
 public class SyntaxHighlighter {
 	
-	static void placeMarkers(List<ViolationData> vD, IResource r) {
-		deleteMarkers(r);
-		for(ViolationData d : vD) {
+	static void placeMarkers(List<ViolationData> vD, IResource resource) {
+		deleteMarkers(resource);
+		for(final ViolationData d : vD) {
 			try {
-				IPath p = new Path(d.getFilePath());
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				IFile file = root.getFileForLocation(p);
+				final IPath path = new Path(d.getFilePath());
+				final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+				final IFile file = root.getFileForLocation(path);
 				
-				Map<String, Object> mA = new HashMap<String, Object>();
-				mA.put(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
-				mA.put(IMarker.MESSAGE, d.getViolation());
-				mA.put(IMarker.LINE_NUMBER, d.getLineNumber());
-				/*mA.put(IMarker.CHAR_START, d.getStartChar());
-				mA.put(IMarker.CHAR_END, d.getEndChar());*/
+				final Map<String, Object> markerAttributes = new HashMap<String, Object>();
+				markerAttributes.put(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
+				markerAttributes.put(IMarker.MESSAGE, d.getViolation());
+				markerAttributes.put(IMarker.LINE_NUMBER, d.getLineNumber());
 				
-				IMarker marker = file.createMarker("codingstandards.violationmarker");
-				marker.setAttributes(mA);
-				//System.out.println("Marker " + marker.getId() + " gets line " + d.getLineNumber() + " with " + d.getStartChar() + " & " + d.getEndChar() + " for \"" + d.getViolation() + "\"");
+				final IMarker marker = file.createMarker("codingstandards.violationmarker");
+				marker.setAttributes(markerAttributes);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public static void deleteMarkers(IResource r) {
+	public static void deleteMarkers(final IResource resource) {
 		try {
-			r.deleteMarkers(null, true, IResource.DEPTH_INFINITE);
+			resource.deleteMarkers(null, true, IResource.DEPTH_INFINITE);
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
 	}
 	
-	public static int getOffset(List<String> doc, int cLPos, int lOffset) {
+	public static int getOffset(final List<String> doc, final int cLPos, int lOffset) {
 		for(int i = 0; i < cLPos; i++) {
 			lOffset += doc.get(i).length() - 1;
 		}

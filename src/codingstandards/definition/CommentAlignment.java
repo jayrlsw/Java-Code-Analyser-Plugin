@@ -19,23 +19,26 @@ public class CommentAlignment {
 	public CommentAlignment() {}
 	
 	public List<ViolationData> scan(List<String> doc, IResource r) {
-		List<ViolationData> d = new LinkedList<ViolationData>();
-		List<String> params = GetSettings.getValue("Comment Alignment", r);
+		final List<ViolationData> d = new LinkedList<ViolationData>();
+		final List<String> params = GetSettings.getValue("Comment Alignment", r);
 		
-		if(params == null) return d;
-		if(!Boolean.parseBoolean(params.get(0))) return d;
-		List<Integer> check = new LinkedList<Integer>();
+		if(params == null) {
+			return d;
+		}
+		if(!Boolean.parseBoolean(params.get(0))) {
+			return d;
+		}
+		final List<Integer> check = new LinkedList<Integer>();
 		for(int i = 0; i < doc.size(); i++) {
-			String line = BeginScan.replaceIndentation(doc.get(i));
+			final String line = BeginScan.replaceIndentation(doc.get(i));
 			
-			char[] cArr = line.toCharArray();
+			final char[] cArr = line.toCharArray();
 			int count = 0;
 			char lastChar = 'a';
-			for(char c : cArr) {
+			for(final char c : cArr) {
 				if(lastChar == '/' && c == '/') {
 					count--;
 					check.add(count);
-					System.out.println("Count = " + count);
 					d.add(new ViolationData(name, violation, new int[] {i + 1, SyntaxHighlighter.getOffset(doc, i, count), i + 1, doc.get(i).length() - count}));
 				}
 				lastChar = c;
@@ -49,7 +52,7 @@ public class CommentAlignment {
 			return d;
 		}
 		
-		Integer startNum = check.get(0);
+		final Integer startNum = check.get(0);
 		for(int i = 1; i < check.size(); i++) {
 			if(check.get(i) != startNum) {
 				d.clear();

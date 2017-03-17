@@ -48,51 +48,33 @@ public class BeginScan {
 	static String path;
 	
 	public static void analyse(ExecutionEvent event) throws ExecutionException, PartInitException {
-		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-		
-		ISelectionService service = window.getSelectionService();
-		
-		IStructuredSelection files = (IStructuredSelection) service.getSelection();
-		
-		List<ViolationData> results = new ArrayList<ViolationData>();
+		final IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
+		final ISelectionService service = window.getSelectionService();
+		final IStructuredSelection files = (IStructuredSelection) service.getSelection();
+		final List<ViolationData> results = new ArrayList<ViolationData>();
 		
 		hResource = (IResource)Platform.getAdapterManager().getAdapter(files.getFirstElement(), IResource.class);
-		
 		project = hResource.getProject();
 		
-		IJavaElement j = JavaCore.create(project);
-		IJavaProject jp = j.getJavaProject();
-		options = jp.getOptions(false);
+		final IJavaElement javaElement = JavaCore.create(project);
+		final IJavaProject javaProject = javaElement.getJavaProject();
+		options = javaProject.getOptions(false);
 		
-		for(@SuppressWarnings("unchecked")
-		Iterator<Object> i = files.iterator(); i.hasNext();) {
+		for(@SuppressWarnings("unchecked") final Iterator<Object> i = files.iterator(); i.hasNext();) {
 		
-			Object f = i.next();
+			final Object f = i.next();
 			
-			/*if(f instanceof IFile) {
-				IFile file = (IFile) f;
-			
-				IPath path = file.getLocation();
-				System.out.println("Processing: " + path.toString());
-				try {
-					results.addAll(processAnalysis(file.getContents()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (CoreException e) {
-				}
-			}*/
-		
 			if (f instanceof ICompilationUnit) {
-				ICompilationUnit cu = (ICompilationUnit) f;
+				final ICompilationUnit compilationUnit = (ICompilationUnit) f;
 				IResource resource = null;
 				try {
-					resource = cu.getUnderlyingResource();
+					resource = compilationUnit.getUnderlyingResource();
 				} catch (JavaModelException e2) {
 					e2.printStackTrace();
 				}
 				path = null;
 				if(resource.getType() == IResource.FILE) {
-					IFile ifile = (IFile) resource;
+					final IFile ifile = (IFile) resource;
 					path = ifile.getRawLocation().toString();
 				}
 				
@@ -109,7 +91,6 @@ public class BeginScan {
 					e.printStackTrace();
 				}
 			}
-		
 		}
 				
 		SyntaxHighlighter.placeMarkers(results, hResource);
@@ -121,30 +102,31 @@ public class BeginScan {
 				"Analysis Complete. " + results.size() + " violations found.");
 	}
 	
+	@SuppressWarnings("unchecked")
 	static List<ViolationData> processAnalysis(BufferedReader io) throws IOException {
 		
-		List<ViolationData> fOutput = new ArrayList<ViolationData>();
+		final List<ViolationData> fOutput = new ArrayList<ViolationData>();
 		String str = "";
-		List<String> strL = new ArrayList<String>();
+		final List<String> strL = new ArrayList<String>();
 		while((str = io.readLine()) != null) {
 			strL.add(str);
 		}
 		List<Definition> dList = new ArrayList<Definition>();
-		Definitions defs = new Definitions();
+		final Definitions defs = new Definitions();
 		dList = defs.getDefinitions();
-		for(Definition d : dList) {
-			String className = d.getName().replaceAll(" ", "");
+		for(final Definition d : dList) {
+			final String className = d.getName().replaceAll(" ", "");
 			List<ViolationData> result = new LinkedList<ViolationData>();
 			try {
-				Class<?> clazz = Class.forName("codingstandards.definition." + className);
-				Method m = clazz.getDeclaredMethod("scan", List.class, IResource.class);
-				Object object = clazz.newInstance();
-				result = (List<ViolationData>)m.invoke(object, strL, hResource);
+				final Class<?> clazz = Class.forName("codingstandards.definition." + className);
+				final Method method = clazz.getDeclaredMethod("scan", List.class, IResource.class);
+				final Object object = clazz.newInstance();
+				result = (List<ViolationData>) method.invoke(object, strL, hResource);
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| NoSuchMethodException | ClassNotFoundException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
-			for(ViolationData vD : result) {
+			for(final ViolationData vD : result) {
 				if (vD != null) {
 					vD.setFilename(path);
 					fOutput.add(vD);
@@ -155,21 +137,20 @@ public class BeginScan {
 		return fOutput;
 	}
 	
-	public static String replaceIndentation(String str) {
-		String sR = new String(new char[getTabWidth()]).replace("\0", " ");
-		str = str.replaceAll("\t", sR);
-		return str;
+	public static String replaceIndentation(final String str) {
+		final String stringReplace = new String(new char[getTabWidth()]).replace("\0", " ");
+		return str.replaceAll("\t", stringReplace).toString();
 	}
 	
 	static int getTabWidth() {
 		return IndentManipulation.getTabWidth(options);
 	}
 	
-	static void displayViolations(List<ViolationData> results) {
-		BundleContext ctx = FrameworkUtil.getBundle(BeginScan.class).getBundleContext();
-		ServiceReference<EventAdmin> ref = ctx.getServiceReference(EventAdmin.class);
-		EventAdmin eventAdmin = ctx.getService(ref);
-		Map<String, List<ViolationData>> properties = new HashMap<String, List<ViolationData>>();
+	static void displayViolations(final List<ViolationData> results) {
+		final BundleContext ctx = FrameworkUtil.getBundle(BeginScan.class).getBundleContext();
+		final ServiceReference<EventAdmin> ref = ctx.getServiceReference(EventAdmin.class);
+		final EventAdmin eventAdmin = ctx.getService(ref);
+		final Map<String, List<ViolationData>> properties = new HashMap<String, List<ViolationData>>();
 		properties.put("DATA", results);
 		
 		Event event = new Event("viewcommunication/syncEvent", properties);

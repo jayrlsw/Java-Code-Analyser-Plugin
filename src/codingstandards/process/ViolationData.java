@@ -19,11 +19,11 @@ public class ViolationData {
 		this.pos[3] = pos[3]; //End position
 	}
 	
-	public void setLineNumber(int lineNumber) {
+	public void setLineNumber(final int lineNumber) {
 		this.pos[0] = lineNumber;
 	}
 	
-	public void setFilename(String filePath) {
+	public void setFilename(final String filePath) {
 		this.fileName = Paths.get(filePath).getFileName().toString();
 		this.filePath = filePath;
 	}
