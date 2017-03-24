@@ -33,21 +33,21 @@ public class PackageNames {
 				final char[] lineC = line.toCharArray();
 				
 				boolean capitalisation = false;
-				final boolean spaces = false;
+				boolean spaces = false;
 				for(final char w : lineC) {
 					if(forceLowerCase && !Character.isLowerCase(w) && Character.isLetter(w)) {
 						capitalisation = true;
 					}
-					if(denySpaces) {
-						//w.contains(s)
+					if(denySpaces & w == '_') {
+						spaces = true;
 					}
 				}
 				if(capitalisation || spaces) {
 					String result = "";
-					/*if(capitalisation && spaces) {
+					if(capitalisation && spaces) {
 						result = "Capitalisation and spaces";
 					}
-					else */if (capitalisation) {
+					else if (capitalisation) {
 						result = "Capitalisation";
 					}
 					else if (spaces) {

@@ -25,7 +25,7 @@ public class Definitions {
 		packageNames.setName("Package Names");
 		packageNames.setDescription("Package name rules define how spacing and capitalisation should be applied to package name. This is done to avoid confusion between class and method names.");
 		packageNames.addParams("RequireLowerCase", "Require lower case package names", Definition.CHECKBOX);
-		packageNames.addParams("AllowSpaces", "Allow spaces in package names", Definition.CHECKBOX);
+		packageNames.addParams("AllowSpaces", "Deny usage of spaces in package names", Definition.CHECKBOX);
 		definitions.add(packageNames);
 	}
 	
