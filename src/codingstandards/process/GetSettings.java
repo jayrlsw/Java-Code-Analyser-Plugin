@@ -26,7 +26,7 @@ public class GetSettings {
 		
 		final Configuration config = JsonHandler.getConfig(configName);
 		final Rule rule = config.getRule(name);
-		if(!Boolean.parseBoolean(rule.getEnabled())) {
+		if(!rule.getEnabled()) {
 			return null;
 		}
 		List<Parameter> params = new ArrayList<Parameter>();

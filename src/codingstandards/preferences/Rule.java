@@ -6,10 +6,10 @@ import java.util.List;
 public class Rule {
 	
 	private String name;
-	private String enabled;
+	private boolean enabled;
 	private List<Parameter> params = new ArrayList<Parameter>();
 	
-	Rule(final String name, final String enabled) {
+	Rule(final String name, final boolean enabled) {
 		this.name = name;
 		this.enabled = enabled;
 	}
@@ -19,8 +19,7 @@ public class Rule {
 	}
 	
 	void setEnabled(boolean enabled) {
-		if(enabled) this.enabled = "true";
-		else this.enabled = "false";
+		this.enabled = enabled;
 	}
 	
 	Parameter getParameter(final String name) {
@@ -34,7 +33,7 @@ public class Rule {
 		return name;
 	}
 	
-	public String getEnabled() {
+	public boolean getEnabled() {
 		return enabled;
 	}
 	

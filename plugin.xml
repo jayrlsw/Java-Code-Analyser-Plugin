@@ -14,7 +14,7 @@
             name="Analyse Code">
       </command>
       <command
-            categoryId="CodingStandardsAnalyser.commands.clearViolations"
+            categoryId="CodingStandardsAnalyser.commands.analyser"
             id="CodingStandardsAnalyser.commands.clearer"
             name="Clear Violations">
       </command>

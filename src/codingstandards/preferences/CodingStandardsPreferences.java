@@ -47,15 +47,16 @@ public class CodingStandardsPreferences
 		tableComposite.setLayout(new FormLayout());
 		tableComposite.setLayoutData(new GridData(400, 300));
 		
-		TableViewerBuilder t = new TableViewerBuilder(tableComposite, SWT.BORDER | SWT.V_SCROLL);
-		final ColumnBuilder configurationName = t.createColumn("Configuration Name");
+		final TableViewerBuilder tableBuilder = new TableViewerBuilder(tableComposite, SWT.BORDER | SWT.V_SCROLL);
+		final ColumnBuilder configurationName = tableBuilder.createColumn("Coding Standard Name");
 		configurationName.setPixelWidth(200);
 		configurationName.bindToProperty("name");
+		configurationName.useAsDefaultSortColumn();
 		configurationName.build();
 		
 		
 		//t.setInput(dH.tableFiller());
-		tableViewer = t.getTableViewer();
+		tableViewer = tableBuilder.getTableViewer();
 		tableViewer.setContentProvider(new ArrayContentProvider());
 		tableViewer.setInput(dataHandler.tableFiller());
 		

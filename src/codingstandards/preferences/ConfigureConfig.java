@@ -191,7 +191,7 @@ public class ConfigureConfig {
 		}
 		final TableItem[] tableItem = tableBuilder.getTable().getItems();
 		for(final TableItem item : tableItem) {
-			final boolean configValue = Boolean.parseBoolean(config.getRule(item.getText()).getEnabled());
+			final boolean configValue = config.getRule(item.getText()).getEnabled();
 			if(configValue) {
 				item.setChecked(true);
 			}
@@ -202,9 +202,9 @@ public class ConfigureConfig {
 		final Configuration config = new Configuration(configName);
 		for (final HashMap.Entry<String, Composite> cM : pieceList.entrySet()) {
 			if(!cM.getKey().equals("Infobox")) {
-				String isEnabled = "false";
+				boolean isEnabled = false;
 				final Object enabledValue = cM.getValue().getData("checked");
-				if(enabledValue != null) isEnabled = "true";
+				if(enabledValue != null) isEnabled = true;
 				final Rule rule = new Rule(cM.getKey(), isEnabled);
 				final Composite composite = cM.getValue();
 				for(final Control groups : composite.getChildren()) {
